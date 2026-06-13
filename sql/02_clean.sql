@@ -64,6 +64,7 @@ FROM cleaned
 ORDER BY job_id, start_date DESC NULLS LAST;
 
 -- Upsert staging 
+INSERT INTO jobs (
     job_id, job_title, agency, agency_description, platform, start_date, closing_date,
     employment_type, field, functional_area, industry, category, education_code,
     exp_years_min, exp_years_max, is_new, job_description, job_responsibilities, job_requirements, first_seen, last_seen
