@@ -87,8 +87,8 @@ removed_at = NULL; --job comes back (rare but yk) make it alive again
 --disappearance detection
 UPDATE jobs
 SET removed_at = last_seen
-WHERE last_seen < now(); --AND removed_at IS NULL?
-
+WHERE removed_at IS NULL 
+  AND job_id NOT IN (SELECT job_id FROM staging_jobs);
 
 SELECT
     (SELECT count(*) FROM jobs_raw)     AS raw_rows,
