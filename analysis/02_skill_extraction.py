@@ -1,27 +1,25 @@
+#exact match before we move onto semantic matching 
 import os
-import re
 import pandas as pd
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 import spacy
 from spacy.matcher import PhraseMatcher
+import matplotlib.pyplot as plt
 
 load_dotenv()
-engine = create_engine(os.environ("DATABASE_URL"))
-df = pd.read_sql("SELECT job_id, job_description, job_requirement FROM jobs", engine)
+engine = create_engine(os.environ["DATABASE_URL"])
+df = pd.read_sql("SELECT job_id, job_description, job_requirements FROM jobs", engine)
 
 #combine job_description and job_requirement for easier extraction and remove tags
-df['text'] = ( df['job_description'].fillna('') + '' +  df['job_requirement'].fillna(''))
+df['text'] = ( df['job_description'].fillna('') + ' ' +  df['job_requirements'].fillna(''))
 df['text'] = df['text'].str.replace(r"<[^>]+>", " ", regex=True)
 
 print(df.head())
 
 #load lexicon/skill dict
-s = open('skills/skills_dict.txt', encoding = 'utf8')
-try: 
+with open('skills/skills_dict.txt', encoding='utf8') as s:
     skills = [line.strip() for line in s if line.strip() and not line.startswith('#')]
-finally:
-    s.close()
 
 #using spacy matcher to collect (job_id, skill) as a pair
 nlp = spacy.blank("en")
@@ -45,12 +43,13 @@ print(f"extracted {len(pairs)} job-skill pairs across {pairs['job_id'].nunique()
 with engine.begin() as conn:
     conn.execute(
         text("""
-            INSERT INTO job_embeddings (job_id, embedding)
-            VALUES (:job_id, :embedding)
-            ON CONFLICT (job_id) DO UPDATE SET embedding = EXCLUDED.embedding
+            INSERT INTO job_skills (job_id, skill)
+            VALUES (:job_id, :skill)
+            ON CONFLICT (job_id, skill) DO NOTHING
         """),
-        df[["job_id", "embedding"]].to_dict("records"),
+        pairs.to_dict("records"),
     )
+
 #coverage check (the TODO from EDA): what fraction of jobs matched >=1 skill?
 covered = pairs["job_id"].nunique()
 total = len(df)
@@ -58,7 +57,6 @@ print(f"coverage: {covered}/{total} jobs matched at least one skill ({100*covere
 #run 1:86.6% is sufficient. 
 
 #hiring volume by skill
-import matplotlib.pyplot as plt
 df_skills = pd.read_sql('SELECT * FROM job_skills', engine)
 print(df_skills.shape)
 
@@ -72,4 +70,4 @@ df_skills['skill'].value_counts().head(20).plot.barh(
 # biggest bar on top. too many skills so only taking top 20
 
 plt.tight_layout()
-plt.show()
+plt.savefig("analysis/figures/postings_by_skill.png", dpi=120)
