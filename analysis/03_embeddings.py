@@ -29,7 +29,7 @@ emb = model.encode(
 print(emb.shape)
 
 
-df["embedding"] = ["[" + ",".join(map(str, v)) + "]" for v in emb]
+df["embedding"] = [v.tolist() for v in emb]  
 
 with engine.begin() as conn:
     conn.execute(
