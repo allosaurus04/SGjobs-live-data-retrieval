@@ -14,8 +14,8 @@ df = pd.read_sql('SELECT job_id, job_title, job_description FROM jobs WHERE job_
 print(df.shape)
 print(df.head())
 
-#remove tags
-df["job_description"] = df["job_description"].str.replace(r"<[^>]+>", " ", regex=True)
+HTML = r"<[^>]+>"
+df["job_description"] = df["job_description"].str.replace(HTML, " ", regex=True)
 
 #converting text in description into vectors. enabled pgvector extension back in 00_schema.sql. hopefully stays consistent with upsert logic.
 df['text'] = (df['job_title'].fillna("") + '' + df['job_description'].fillna(''))
