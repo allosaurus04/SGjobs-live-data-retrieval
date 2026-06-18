@@ -51,5 +51,9 @@ CREATE INDEX IF NOT EXISTS idx_jobs_desc_fts ON jobs
 
 CREATE OR REPLACE VIEW v_jobs_clean AS
 SELECT
-    job_id, job_title, agency, platform, field, industry, employment_type, exp_years_min, exp_years_max, (exp_years_min + exp_years_max) / 2.0 AS exp_years_mid, start_date, closing_date, (closing_date IS NULL OR closing_date >= now()) AS is_open, job_description
+    job_id, job_title, agency, platform, field, industry, employment_type,
+    exp_years_min, exp_years_max, (exp_years_min + exp_years_max) / 2.0 AS exp_years_mid,
+    start_date, closing_date, (closing_date IS NULL OR closing_date >= now()) AS is_open,
+    first_seen, last_seen, removed_at,
+    job_description
 FROM jobs;
