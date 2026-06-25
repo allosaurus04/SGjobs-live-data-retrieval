@@ -34,6 +34,37 @@ same retrieval primitive that underpins RAG, used here standalone for recommenda
 └── LICENSE
 ```
 
+## Main Table (jobs) 
+## Table `jobs`
+
+### Columns
+
+| Name | Type | Constraints |
+|------|------|-------------|
+| `job_id` | `text` | Primary |
+| `job_title` | `text` |  Nullable |
+| `agency` | `text` |  Nullable |
+| `agency_description` | `text` |  Nullable |
+| `platform` | `text` |  Nullable |
+| `start_date` | `timestamptz` |  Nullable |
+| `closing_date` | `timestamptz` |  Nullable |
+| `employment_type` | `text` |  Nullable |
+| `field` | `text` |  Nullable |
+| `functional_area` | `text` |  Nullable |
+| `industry` | `text` |  Nullable |
+| `category` | `text` |  Nullable |
+| `education_code` | `text` |  Nullable |
+| `exp_years_min` | `int4` |  Nullable |
+| `exp_years_max` | `int4` |  Nullable |
+| `is_new` | `bool` |  Nullable |
+| `job_description` | `text` |  Nullable |
+| `job_responsibilities` | `text` |  Nullable |
+| `job_requirements` | `text` |  Nullable |
+| `first_seen` | `timestamptz` |  Nullable |
+| `last_seen` | `timestamptz` |  Nullable |
+| `removed_at` | `timestamptz` |  Nullable |
+
+
 ## Run the ETL (build + load + clean)
 
 ```bash
