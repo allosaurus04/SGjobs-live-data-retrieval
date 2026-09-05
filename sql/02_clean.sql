@@ -17,12 +17,9 @@ WITH cleaned AS (
 
         CASE
             WHEN "closingDate" ~ '^\d+$' THEN
-                CASE
-                    WHEN to_timestamp("closingDate"::bigint / 1000)
-                         >= '9999-01-01'::timestamp THEN NULL
-                    ELSE to_timestamp("closingDate"::bigint / 1000)
-                END
+                CASE WHEN to_timestamp("closingDate"::bigint / 1000) >= '9999-01-01'::timestamp THEN NULL ELSE to_timestamp("closingDate"::bigint / 1000) END
         END  
+    
         --no then so defaults to null                                             
         AS closing_date,
         NULLIF(trim("employmentType"), '')               
@@ -87,8 +84,7 @@ removed_at = NULL; --job comes back (rare but yk) make it alive again
 --disappearance detection
 UPDATE jobs
 SET removed_at = last_seen
-WHERE removed_at IS NULL 
-  AND job_id NOT IN (SELECT job_id FROM staging_jobs);
+WHERE removed_at IS NULL AND job_id NOT IN (SELECT job_id FROM staging_jobs); --must be a set for some reason cannot NOT IN job_id
 
 SELECT
     (SELECT count(*) FROM jobs_raw)     AS raw_rows,
